@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthy Habits</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('https://i.pinimg.com/736x/1f/2e/d7/1f2ed796410477e1a734a08a516a7c9e.jpg');
+            background-size: cover;
+            margin-top: 50px;
+        }
+        #recipe-container, #grocery-list, #shopping-list {
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Healthy Habits</h1>
+    <button id="generate-button">Generate Recipe</button>
+    <button id="generate-grocery-button">Generate Grocery List</button>
+    <button id="generate-shopping-button">Generate Shopping List</button>
+    <div id="recipe-container">
+        <h2>Your Recipe:</h2>
+        <p id="recipe"></p>
+    </div>
+    <div id="grocery-list">
+        <h2>Your Grocery List:</h2>
+        <ul id="list"></ul>
+    </div>
+    <div id="shopping-list">
+        <h2>Your Shopping List:</h2>
+        <ul id="shop-list"></ul>
+    </div>
+
+    <script>
+        const recipes = [
+            {
+                name: "Spaghetti Carbonara",
+                ingredients: ["Spaghetti", "Eggs", "Pancetta", "Parmesan cheese", "Black pepper"]
+            },
+            {
+                name: "Chicken Stir-Fry",
+                ingredients: ["Chicken breast", "Broccoli", "Bell peppers", "Soy sauce", "Garlic", "Ginger"]
+            },
+            {
+                name: "Vegetable Curry",
+                ingredients: ["Mixed vegetables", "Coconut milk", "Curry paste", "Rice"]
+            }
+        ];
+
+        const generateButton = document.getElementById("generate-button");
+        const generateGroceryButton = document.getElementById("generate-grocery-button");
+        const generateShoppingButton = document.getElementById("generate-shopping-button");
+        const recipeContainer = document.getElementById("recipe-container");
+        const groceryListContainer = document.getElementById("grocery-list");
+        const shoppingListContainer = document.getElementById("shopping-list");
+        const recipeText = document.getElementById("recipe");
+        const groceryList = document.getElementById("list");
+        const shopList = document.getElementById("shop-list");
+
+        let currentRecipe = null;
+        let groceryItems = [];
+
+        generateButton.addEventListener("click", () => {
+            currentRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+            recipeText.textContent = currentRecipe.name;
+            recipeContainer.style.display = "block";
+            groceryItems = currentRecipe.ingredients.slice();
+        });
+
+        generateGroceryButton.addEventListener("click", () => {
+            if (currentRecipe) {
+                groceryList.innerHTML = "";
+                groceryItems.forEach((ingredient) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = ingredient;
+                    groceryList.appendChild(listItem);
+                });
+                groceryListContainer.style.display = "block";
+            }
+        });
+
+        generateShoppingButton.addEventListener("click", () => {
+            if (currentRecipe) {
+                shopList.innerHTML = "";
+                groceryItems.forEach((ingredient) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `${ingredient} - Qty: 1`;
+                    shopList.appendChild(listItem);
+                });
+                shoppingListContainer.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>

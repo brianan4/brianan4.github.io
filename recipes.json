@@ -1,0 +1,32 @@
+{
+    "recipe_list": [
+        {
+            "name": "Grilled Cheese",
+            "chef": "Chef A",
+            "ingredients": {
+                "Bread slices": "2",
+                "Cheddar cheese": "1 slice (1 oz/28 grams)"
+            },
+            "instructions": [
+                "Place 1 cheddar cheese slice between two bread slices.",
+                "In a pan over medium heat, grill the sandwich until the bread is golden and the cheese is melted.",
+                "Repeat for the other side."
+            ]
+        },
+        {
+            "name": "Steak",
+            "chef": "Chef B",
+            "ingredients": {
+                "Steak": "1 cut",
+                "Salt": "to taste",
+                "Butter": "1 tablespoon"
+            },
+            "instructions": [
+                "Preheat a pan over high heat.",
+                "Season the steak with salt and black pepper on both sides.",
+                "Place the steak on the pan and cook to your preferred doneness.",
+                "Repeat for the other side."
+            ]
+        }
+    ]
+}

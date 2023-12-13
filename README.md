@@ -9,4 +9,7 @@ Steps before running:
   - Add API key to ".env"
 
 Running:
-- Open and run "main.py"
+- Run "main.py"
+- Utilize terminal for input
+  - Given a list of options, enter <int> to select
+  - Given "Question: ", input any question

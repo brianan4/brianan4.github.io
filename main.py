@@ -16,42 +16,71 @@ load_dotenv()
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-cloud-api-key.json'
 
 # Shortcut Calls
-def say(input):
+def say(input, print_out = True):
     text = input
     
     if type(input) != str:
         text = str(input)
 
+    if print_out == True:
+        print(text)
+
     text_to_speech.text_to_audio(text)
 
 def transcribe(text = ""):
-    if text:
-        say(text)
+    return input(text)
+    # if text:
+    #     say(text)
 
-    return speech_to_text.audio_to_text()
+    # return speech_to_text.audio_to_text()
+
+def clear():
+    if os.name == "nt":
+        os.system("cls")
+    else:
+        os.system("clear")
 
 def run(recipe: Recipe, state_machine: ChefAssistantMachine, chef_ai: ChefAI):
-    while (True):
-        state_phrase = f"Current State: {state_machine.current_state.name}"
-        print(state_phrase)
-        print(state_machine.allowed_event_names)
+    instruction_phrase = ""
+    valid_command = True
 
-        word = transcribe()
+    while (not state_machine.current_state.final):
+        if valid_command == True:
+            clear()
 
-        if word == "ask":
+            state_phrase = f"Current State: {state_machine.current_state.name}"
+            print(state_phrase)
+
+            if instruction_phrase:
+                say(instruction_phrase)
+
+            print()
+
+            allowed_event_phrase = "Commands: ask, "
+            allowed_event_phrase += ", ".join(state_machine.allowed_event_names)
+            print(allowed_event_phrase)
+        else:
+            valid_command = True
+
+        command = transcribe()
+
+        if command == "ask":
             question = transcribe("What is your question?")
+            print(f"Question: {question}")
+            
             response_stream = chef_ai.ask(question)
             
+            answer = ""
             for line in response_stream:
-                print(line)
-                say(line)
-
-        elif word in state_machine.allowed_event_names:
+                print(line, end = '')
+                answer += line
+        elif command in state_machine.allowed_event_names:
+            event = command
             code = 0
 
-            match word:
+            match command:
                 case "adjust":
-                    state_machine.send(word)
+                    state_machine.send("adjust")
                     say("What feedback/adjustment would you make to the recipe?")
                     feedback = transcribe()
 
@@ -60,7 +89,6 @@ def run(recipe: Recipe, state_machine: ChefAssistantMachine, chef_ai: ChefAI):
                     adjustment = ExtractJSON(response)
 
                     say(adjustment.intro)
-                    print(response)
                     print(adjustment.json_string)
                     adjustment_json = json.loads(adjustment.json_string)
 
@@ -74,28 +102,33 @@ def run(recipe: Recipe, state_machine: ChefAssistantMachine, chef_ai: ChefAI):
 
                     say(adjustment.outro)
                 case _:
-                    match word:
+                    match command:
                         case "next":
+                            event = "next"
                             code = recipe.next()
                         case "back":
+                            event = "back"
                             code = recipe.back()
                         case "exit":
-                            recipe.end()
+                            event = "exit"
+                            code = recipe.end()
 
-                    state_machine.send(word, code)
+                    state_machine.send(event, code)
 
-                    if code == 0:
-                        instruction_phrase = f"Step {recipe.current_step()}. {recipe.instruction()}"
-                        say(instruction_phrase)
+            instruction_phrase = ""
+            if code == 0:
+                recipe_step, recipe_measurement = recipe.instruction()
+                instruction_phrase = f"Step {recipe.current_step()}. {recipe_step} ({recipe_measurement})"
         else:
-            say("Unknown command")
+            valid_command = False
+            say(f"{command}, is an unknown command", print_out = False)
                     
         print()
 
 
 def main():
-    recipes = ["test_recipe.json", "teriyaki_chicken_recipe.json"]
-    recipe_file = recipes[1]
+    recipes = ["teriyaki_chicken_recipe.json"]
+    recipe_file = recipes[0]
     
     recipe = Recipe(recipe_file)
     state_machine = ChefAssistantMachine()

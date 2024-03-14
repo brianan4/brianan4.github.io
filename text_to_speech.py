@@ -27,12 +27,14 @@ def text_to_audio(text: str):
     audio_stream = io.BytesIO(response.audio_content)
     
     p = pyaudio.PyAudio()
-    data = audio_stream.read(1024)
+    
     
     stream = p.open(format = p.get_format_from_width(2),
                     channels = 1,
                     rate = 24000,
                     output = True)
+    
+    data = audio_stream.read(1024)
     while data:
         stream.write(data)
         data = audio_stream.read(1024)

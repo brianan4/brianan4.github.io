@@ -38,6 +38,7 @@ class Recipe():
 
     def end(self):
         self.step = 0
+        return 1
 
     def current_step(self):
         return self.step

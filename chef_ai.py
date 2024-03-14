@@ -11,7 +11,8 @@ class ChefAI():
         stream = self.client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a chef, well versed in all aspects of cooking and baking."},
+                {"role": "system", "content": '''You are a chef, well versed in all aspects of cooking and baking.
+Answer in quick and concise sentences.'''},
                 {"role": "user", "content": question}
             ],
             stream = True

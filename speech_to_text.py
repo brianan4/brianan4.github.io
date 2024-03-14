@@ -8,7 +8,6 @@ from google.cloud import speech
 
 import pyaudio
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'speech-to-text-409402-e44fd92efa48.json'
 # Audio recording parameters
 STREAMING_LIMIT = 240000  # 4 minutes
 SAMPLE_RATE = 48000 # 48kHz
@@ -183,54 +182,7 @@ class ResumableMicrophoneStream:
 
             yield b"".join(data)
 
-
-def write_transcript_to_file(transcript: str, file_name: str) -> None:
-    "Writes the transcript to a specified text file in the current working directory."
-    try:
-        # Get the current working directory
-        cwd = os.getcwd()
-        # Construct the full path
-        file_path = os.path.join(cwd, file_name)
-
-        with open(file_path, 'a') as file:
-            file.write(transcript + '\n')
-
-        print(f"Transcript written to {file_path}")
-    except Exception as e:
-        print(f"Error writing to file: {e}")
-
-
-def listen_print_loop(responses: object, stream: object, file_name: str) -> None:
-    full_transcript = ""  # Initialize an empty string to hold the full transcript
-    for response in responses:
-        if get_current_time() - stream.start_time > STREAMING_LIMIT:
-            stream.start_time = get_current_time()
-            break
-
-        if not response.results:
-            continue
-
-        result = response.results[0]
-        if not result.alternatives:
-            continue
-
-        transcript = result.alternatives[0].transcript
-
-        if re.search(r"\b(exit|quit)\b", transcript, re.I):
-            stream.closed = True
-            break
-
-        if result.is_final:
-            full_transcript += transcript + ' '  # Append each transcript to the full transcript
-            sys.stdout.write(full_transcript)    # Print the full transcript
-            write_transcript_to_file(transcript, file_name)
-
-        stream.is_final_end_time = stream.result_end_time
-        stream.last_transcript_was_final = result.is_final
-
-
-def listen_and_transcribe() -> None:
-    """Start bidirectional streaming from microphone input to speech API"""
+def audio_to_text():
     client = speech.SpeechClient()
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
@@ -246,15 +198,9 @@ def listen_and_transcribe() -> None:
     )
 
     mic_manager = ResumableMicrophoneStream(SAMPLE_RATE, CHUNK_SIZE)
-    print(mic_manager.chunk_size)
-    sys.stdout.write('Listening, say "Quit" or "Exit" to stop.\n')
-
-    # Define the file name
-    transcript_file_name = "transcription.txt"
 
     with mic_manager as stream:
         while not stream.closed:
-            stream.audio_input = []
             audio_generator = stream.generator()
 
             requests = (
@@ -263,19 +209,22 @@ def listen_and_transcribe() -> None:
             )
 
             responses = client.streaming_recognize(streaming_config, requests)
+            
+            for response in responses:
+                if not response.results:
+                    continue
 
-            # Now, put the transcription responses to use.
-            listen_print_loop(responses, stream, transcript_file_name)
+                result = response.results[0]
+                if not result.alternatives:
+                    continue
 
-            if stream.result_end_time > 0:
-                stream.final_request_end_time = stream.is_final_end_time
-            stream.result_end_time = 0
-            stream.last_audio_input = []
-            stream.last_audio_input = stream.audio_input
-            stream.audio_input = []
-            stream.restart_counter = stream.restart_counter + 1
+                if result.is_final:
+                    transcript = result.alternatives[0].transcript
+                    stream.closed = True
+                    
+                    return transcript   
 
-            if not stream.last_transcript_was_final:
-                sys.stdout.write(" ")
-            stream.new_stream = True
-
+if __name__ == "__main__":
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-cloud-api-key.json'
+    
+    print(audio_to_text())

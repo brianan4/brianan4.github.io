@@ -28,7 +28,6 @@ def text_to_audio(text: str):
     
     p = pyaudio.PyAudio()
     
-    
     stream = p.open(format = p.get_format_from_width(2),
                     channels = 1,
                     rate = 24000,
@@ -43,14 +42,8 @@ def text_to_audio(text: str):
     stream.close()
 
     p.terminate()
-    
-
-# New function to read text from a file
-def read_text_from_file(file_path: str):
-    with open(file_path, 'r') as file:
-        return file.read()
 
 if __name__ == "__main__":
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-cloud-api-key.json'
 
-    text_to_audio("Hello. This is Chef Companion. I am your assistant.")
+    text_to_audio("...Hello. This is Chef Companion. I am your assistant.")

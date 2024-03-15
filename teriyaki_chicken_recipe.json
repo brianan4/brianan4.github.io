@@ -1,40 +1,27 @@
-{
-    "name": "Flavorful Teriyaki Chicken",
+{    
+    "name": "Teriyaki Chicken",
     "ingredients": {
         "chicken thigh": "2 lb",
         "soy sauce": "132 g",
         "rice vinegar": "115 g",
         "sesame oil": "5 g",
-        "garlic": "3 cloves",
-        "red pepper flakes": "1 g",
-        "ground black pepper": "1 g",
         "honey": "64 g",
         "corn starch": "3 g",
-        "water": "8 g",
-        "ginger": "15 g",
-        "green onions": "2 stalks",
-        "sesame seeds": "5 g",
-        "brown sugar": "32 g",
-        "mirin": "45 g"
+        "water": "8 g"
     },
     "recipe": [
         "In a medium sized bowl add soy sauce",
         "Add rice vinegar",
         "Add sesame oil",
-        "Mince and add garlic",
-        "Add red pepper flakes",
-        "Add ground black pepper",
-        "Add grated ginger",
         "Mix thoroughly and use just enough to marinate and cover the chicken thigh",
-        "Airfry the marinated chicken at 400F for 12:00",
-        "Mix in honey, brown sugar, and mirin to your remaining marinade",
+        "Airfry the marinated chicken at 400F for 12 minutes",
+        "Mix in honey to your remaining marinade",
         "In a small sized bowl add corn starch",
         "Mix in water and set aside",
         "Fire a pan over medium heat and add the marinade",
         "Once the marinade is hot, mix in the starch slurry",
-        "Remove the marinade off the heat once it has thickened",
-        "Add chopped green onions and sesame seeds for garnish",
-        "Flip and airfry for an additional 12:00",
+        "Remove the marinade off the heat once it has thicken",
+        "Flip and airfry for an additional 12 minutes",
         "Cut and serve over rice and vegetables"
     ]
 }

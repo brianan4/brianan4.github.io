@@ -16,7 +16,7 @@ load_dotenv()
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-cloud-api-key.json'
 
 # Shortcut Calls
-def say(input, print_out = True):
+def say(input, print_out = True, end = "\n"):
     text = input
     
     if type(input) != str:
@@ -28,11 +28,10 @@ def say(input, print_out = True):
     text_to_speech.text_to_audio(text)
 
 def transcribe(text = ""):
-    return input(text)
-    # if text:
-    #     say(text)
+    if text:
+        say(text)
 
-    # return speech_to_text.audio_to_text()
+    return speech_to_text.audio_to_text()
 
 def clear():
     if os.name == "nt":
@@ -51,6 +50,8 @@ def run(recipe: Recipe, state_machine: ChefAssistantMachine, chef_ai: ChefAI):
             state_phrase = f"Current State: {state_machine.current_state.name}"
             print(state_phrase)
 
+            print()
+
             if instruction_phrase:
                 say(instruction_phrase)
 
@@ -65,15 +66,20 @@ def run(recipe: Recipe, state_machine: ChefAssistantMachine, chef_ai: ChefAI):
         command = transcribe()
 
         if command == "ask":
+            print()
             question = transcribe("What is your question?")
             print(f"Question: {question}")
             
             response_stream = chef_ai.ask(question)
             
-            answer = ""
+            line1 = next(response_stream)
+            say(line1.strip("\n"), end = '')
+
             for line in response_stream:
                 print(line, end = '')
-                answer += line
+                
+            valid_command = False
+            print()
         elif command in state_machine.allowed_event_names:
             event = command
             code = 0
@@ -101,6 +107,9 @@ def run(recipe: Recipe, state_machine: ChefAssistantMachine, chef_ai: ChefAI):
                     recipe.adjust(adjustment_json)
 
                     say(adjustment.outro)
+
+                    code = 1
+                    valid_command = False
                 case _:
                     match command:
                         case "next":
@@ -118,12 +127,13 @@ def run(recipe: Recipe, state_machine: ChefAssistantMachine, chef_ai: ChefAI):
             instruction_phrase = ""
             if code == 0:
                 recipe_step, recipe_measurement = recipe.instruction()
-                instruction_phrase = f"Step {recipe.current_step()}. {recipe_step} ({recipe_measurement})"
+                
+                if recipe_measurement:
+                    recipe_measurement = f"({recipe_measurement})"
+
+                instruction_phrase = f"Step {recipe.current_step()}. {recipe_step} {recipe_measurement}"
         else:
             valid_command = False
-            say(f"{command}, is an unknown command", print_out = False)
-                    
-        print()
 
 
 def main():

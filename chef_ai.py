@@ -33,8 +33,6 @@ Answer in quick and concise sentences.'''},
 
     
     def adjust(self, adjustment, recipe_json_string):
-        print(adjustment)
-        print(recipe_json_string)
         completion = self.client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[

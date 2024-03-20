@@ -5,11 +5,13 @@ Steps before running:
 - Create virtual Python environment
   - Install requirements
     - pip install -r requirements.txt
-- Get an OpenAI API key in order to run program
+- Get an OpenAI API key
   - Add API key to ".env"
+- Get a Google Cloud key (.json)
+  - Move to program folder
+  - Rename to "google-cloud-api-key.json"
 
 Running:
 - Run "main.py"
-- Utilize terminal for input
-  - Given a list of options, enter <int> to select
-  - Given "Question: ", input any question
+- Utilize voice for input
+  - Given a list of options, say the key term to select
